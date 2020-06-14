@@ -1,9 +1,13 @@
+export type WorldOptions = {
+  gravity: number;
+  bounce: number;
+  drag: number;
+  terminalVelocity: number;
+};
+
 export type World = {
   enabled: boolean;
-  gravity?: number;
-  bounce?: number;
-  drag?: number;
-  terminalVelocity?: number;
+  options?: WorldOptions;
 };
 
 export type WorldAPI = {
@@ -13,4 +17,4 @@ export type WorldAPI = {
 
 export type WorldState = [World, WorldAPI];
 
-export type CreateWorld = (world?: World) => WorldState;
+export type CreateWorld = (options?: WorldOptions) => WorldState;

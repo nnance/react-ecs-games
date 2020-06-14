@@ -7,7 +7,7 @@ test("starting the world", () => {
 });
 
 test("stopping the world", () => {
-  const [, api] = createWorld({ enabled: true });
+  const [, api] = createWorld();
   const world = api.stop();
   expect(world.enabled).toBeFalsy();
 });

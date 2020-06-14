@@ -16,8 +16,11 @@ const stop: Setter = (world) => ({
   enabled: false,
 });
 
-export const createWorld: CreateWorld = (options = worldDefaults) => {
-  let state = worldDefaults;
+export const createWorld: CreateWorld = (options) => {
+  let state: World = {
+      ...worldDefaults,
+      options,
+  };
 
   const setState = (setter: Setter): World => (state = setter(state));
 
