@@ -1,60 +1,30 @@
-import {
-  System,
-  Component,
-  createEntity,
-  componentFactory,
-  Entity,
-} from "../ecs";
+import { createEntity, Component, selectEntitiesBySystem, executeSystemForEntities } from "../ecs";
+import { locationFactory, velocityFactory, movementSystem, angleFactory } from "./fixtures";
+import { getEntitiesWithComponents } from "./component";
 
-interface Location extends Component {
-  x: number;
-  y: number;
-}
+const ball = createEntity();
+const wall = createEntity();
 
-const isLocation = (component: Component): component is Location => {
-  return (component as Location).x !== undefined;
-};
+const ballVelocity = velocityFactory(ball);
+const ballAngle = angleFactory(ball);
 
-const locationFactory = (entity: Entity, x = 0, y = 0): Location => {
-  return { x, y, ...componentFactory(entity) };
-};
+const components: Component[] = [
+  locationFactory(ball),
+  ballVelocity,
+  ballAngle,
+  locationFactory(wall)
+];
 
-interface Velocity extends Component {
-  velocityX: number;
-  velocityY: number;
-}
-
-const isVelocity = (component: Component): component is Velocity => {
-  return (component as Velocity).velocityX !== undefined;
-};
-
-const velocityFactory = (
-  entity: Entity,
-  velocityX = 0,
-  velocityY = 0
-): Velocity => {
-  return { velocityX, velocityY, ...componentFactory(entity) };
-};
-
-const movementSystem: System = {
-  selector: (components) => {
-    return components.find(isLocation) && components.find(isVelocity)
-      ? [
-          components.find(isLocation) as Location,
-          components.find(isVelocity) as Velocity,
-        ]
-      : [];
-  },
-  executor: (components) => {
-    return components;
-  },
-};
+const entities = [ball, wall];
 
 test("selecting an entity", () => {
-  const ball = createEntity();
-  const ballLocation = locationFactory(ball);
-  const ballVelocity = velocityFactory(ball);
+  const entitiesComponents = getEntitiesWithComponents(entities, components);
+  expect(selectEntitiesBySystem(movementSystem, entitiesComponents).length).toBe(1);
+});
 
-  const components: Component[] = [ballLocation, ballVelocity];
-  expect(movementSystem.selector(components).length).toBe(2);
+test("updating an entity", () => {
+  const entitiesComponents = getEntitiesWithComponents(entities, components);
+  const selected = selectEntitiesBySystem(movementSystem, entitiesComponents);
+  expect(executeSystemForEntities(movementSystem, selected)[0][1]).not.toBe(ballVelocity);
+  expect(executeSystemForEntities(movementSystem, selected)[0][2]).toBe(ballAngle);
 });
