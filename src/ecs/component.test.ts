@@ -1,10 +1,7 @@
+import { Component } from "./types";
 import { createEntity } from "./entity";
 import { locationFactory, velocityFactory } from "./fixtures";
-import {
-  Component,
-  getComponentsByEntity,
-  getEntitiesWithComponents,
-} from "./component";
+import { getComponentsByEntity, getEntitiesWithComponents } from "./component";
 
 const ball = createEntity();
 const wall = createEntity();
@@ -18,8 +15,8 @@ const components: Component[] = [
 const entities = [ball, wall];
 
 test("get components by entity", () => {
-  expect(getComponentsByEntity(ball, components).length).toBe(2);
-  expect(getComponentsByEntity(wall, components).length).toBe(1);
+  expect(getComponentsByEntity(ball, components).components.length).toBe(2);
+  expect(getComponentsByEntity(wall, components).components.length).toBe(1);
 });
 
 test("get entities with components", () => {

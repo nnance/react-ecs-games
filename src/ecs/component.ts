@@ -1,9 +1,4 @@
-import { Entity } from "./entity";
-
-export interface Component {
-  id: number;
-  entity: number;
-}
+import { Entity, Component, SystemEntity } from "./types";
 
 const MAX_NUM = 100000;
 
@@ -15,13 +10,16 @@ export const componentFactory = (entity: Entity): Component => ({
 export const getComponentsByEntity = (
   entity: Entity,
   components: Component[]
-): Component[] => {
-  return components.filter((comp) => comp.entity === entity.id);
+): SystemEntity => {
+  return {
+    ...entity,
+    components: components.filter((comp) => comp.entity === entity.id),
+  };
 };
 
 export const getEntitiesWithComponents = (
   entities: Entity[],
   components: Component[]
-): Component[][] => {
+): SystemEntity[] => {
   return entities.map((entity) => getComponentsByEntity(entity, components));
 };

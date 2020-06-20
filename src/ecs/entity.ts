@@ -1,6 +1,4 @@
-export type Entity = {
-  id: number;
-};
+import { Entity } from "./types";
 
 const MAX_NUM = 100000;
 

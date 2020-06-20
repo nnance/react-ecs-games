@@ -1,28 +1,7 @@
-import { Entity, createEntity } from "./entity";
-import { Component, getEntitiesWithComponents } from "./component";
-import { System, executeSystemForEntities } from "./system";
-
-export type WorldOptions = {
-  gravity: number;
-  bounce: number;
-  drag: number;
-  terminalVelocity: number;
-};
-
-export type World = {
-  enabled: boolean;
-  entities: Entity[];
-  components: Component[];
-  systems: System[];
-  options?: WorldOptions;
-};
-
-export type WorldAPI = {
-  start: () => World;
-  stop: () => World;
-};
-
-export type CreateWorld = (world: Partial<World>, options?: WorldOptions) => [World, WorldAPI];
+import { World, CreateWorld, Entity, Component, WorldAPI, SystemEntity } from "./types";
+import { createEntity } from "./entity";
+import { getEntitiesWithComponents } from "./component";
+import { executeSystemForEntities } from "./system";
 
 type Setter = (world: World) => World;
 
@@ -77,13 +56,14 @@ export const addComponent = (world: World, component: Component): World => {
 };
 
 export const execute = (world: World): World => {
-  const components = world.systems.reduce<Component[]>((prev, system) => {
-    const entities = getEntitiesWithComponents(world.entities, prev);
-    const updates = executeSystemForEntities(system, entities);
-    return updates.reduce((prev, entity) => prev.concat(...entity), []);
-  }, world.components);
+  const entities = getEntitiesWithComponents(world.entities, world.components);
+
+  const components = world.systems.reduce<SystemEntity[]>((prev, system) => {
+    return executeSystemForEntities(system, entities);
+  }, entities);
+
   return {
     ...world,
-    components,
+    components: components.reduce<Component[]>((prev, entity) => prev.concat(entity.components), []),
   };
 };

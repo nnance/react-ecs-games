@@ -30,28 +30,31 @@ export const velocityFactory = (
   return { velocityX, velocityY, ...componentFactory(entity) };
 };
 
-interface Angle extends Component { angle: number };
+interface Angle extends Component {
+  angle: number;
+}
 
-export const angleFactory = (
-  entity: Entity,
-  angle = 0
-): Angle => {
+export const angleFactory = (entity: Entity, angle = 0): Angle => {
   return { angle, ...componentFactory(entity) };
 };
 
 export const movementSystem: System = {
-  selector: (components) => {
+  selector: (entity) => {
+    const { components } = entity;
     return components.find(isLocation) && components.find(isVelocity)
       ? true
       : false;
   },
-  executor: (components) => {
-    return components.map((component) => {
-      return isLocation(component)
-        ? { ...component, x: component.x + 10 }
-        : isVelocity(component)
-        ? { ...component }
-        : component;
-    });
+  executor: (entity) => {
+    const { components } = entity;
+    const velocityX = components.find(isVelocity)?.velocityX;
+    return {
+      ...entity,
+      components: entity.components.map((component) => {
+        return isLocation(component)
+          ? { ...component, x: component.x + (velocityX || 0) }
+          : component;
+      }),
+    };
   },
 };
