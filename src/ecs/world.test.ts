@@ -7,31 +7,43 @@ import {
   componentFactory,
 } from "../ecs";
 
-import { locationFactory, velocityFactory, Location, movementSystem } from "./fixtures";
+import { locationFactory, velocityFactory, Location, movementSystem, rotateSystem, angleFactory, VELOCITY } from "./fixtures";
 
 const ball = createEntity();
-const location = locationFactory(ball);
-const velocity = velocityFactory(ball);
+const wall = createEntity();
+
+const entities = [ball, wall];
+
+const components = [
+  locationFactory(ball), 
+  velocityFactory(ball),
+  locationFactory(wall),
+  angleFactory(wall),
+];
 
 const [world, api] = createWorld({
-  systems: [movementSystem],
-  entities: [ball],
-  components: [location, velocity]
+  systems: [movementSystem, rotateSystem],
+  entities,
+  components
 });
 
 test("adding entities to the world", () => {
   const [newWorld, entity] = addEntity(world);
-  expect(newWorld.entities.length).toBe(2);
+  const results = entities.length + 1;
+
+  expect(newWorld.entities.length).toBe(results);
   expect(entity).not.toBeUndefined();
 });
 
 test("adding components by entity", () => {
   const component = componentFactory(ball);
-  expect(addComponent(world, component).components.length).toBe(3);
+  const result = components.length + 1;
+
+  expect(addComponent(world, component).components.length).toBe(result);
 });
 
 test("executing systems for components", () => {
-  expect((execute(world).components[0] as Location).x).toBe(10);
+  expect((execute(world).components[0] as Location).x).toBe(VELOCITY);
 });
 
 test("starting the world", () => {

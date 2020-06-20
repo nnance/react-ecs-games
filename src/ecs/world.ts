@@ -59,7 +59,7 @@ export const execute = (world: World): World => {
   const entities = getEntitiesWithComponents(world.entities, world.components);
 
   const components = world.systems.reduce<SystemEntity[]>((prev, system) => {
-    return executeSystemForEntities(system, entities);
+    return executeSystemForEntities(system, prev);
   }, entities);
 
   return {
