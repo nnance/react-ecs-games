@@ -1,6 +1,6 @@
 import { System, Component, componentFactory, Entity } from ".";
 
-interface Location extends Component {
+export interface Location extends Component {
   x: number;
   y: number;
 }
@@ -24,7 +24,7 @@ const isVelocity = (component: Component): component is Velocity => {
 
 export const velocityFactory = (
   entity: Entity,
-  velocityX = 0,
+  velocityX = 10,
   velocityY = 0
 ): Velocity => {
   return { velocityX, velocityY, ...componentFactory(entity) };
@@ -48,7 +48,7 @@ export const movementSystem: System = {
   executor: (components) => {
     return components.map((component) => {
       return isLocation(component)
-        ? { ...component }
+        ? { ...component, x: component.x + 10 }
         : isVelocity(component)
         ? { ...component }
         : component;
