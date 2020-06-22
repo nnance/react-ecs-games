@@ -1,3 +1,8 @@
+# react-ecs-games
+A lightweight opinionated ECS based game engine for React.
+
+## Getting Started
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
