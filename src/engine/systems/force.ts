@@ -5,7 +5,9 @@ import { isVelocity } from "../components/velocity";
 export const forceSystem: System = {
   selector: (entity) => {
     const { components } = entity;
-    return components.find(isGravity) ? true : false;
+    return components.find(isGravity) && components.find(isVelocity)
+      ? true
+      : false;
   },
   executor: (entity) => {
     const { components } = entity;
@@ -14,15 +16,15 @@ export const forceSystem: System = {
     return force
       ? {
           ...entity,
-          components: components.map((comp) =>
-            isVelocity(comp)
+          components: components.map((comp) => {
+            return isVelocity(comp)
               ? {
                   ...comp,
                   velocityY: (comp.velocityY + force.gravity) * force.drag,
                   velocityX: comp.velocityX * force.drag,
                 }
-              : comp
-          ),
+              : comp;
+          }),
         }
       : entity;
   },

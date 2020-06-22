@@ -1,6 +1,6 @@
 import { System } from "../../ecs";
 import { isLocation } from "../components/location";
-import { isVelocity } from "../components/velocity";
+import { isVelocity, Velocity } from "../components/velocity";
 
 export const movementSystem: System = {
   selector: (entity) => {
@@ -13,15 +13,32 @@ export const movementSystem: System = {
     const { components } = entity;
     const vel = components.find(isVelocity);
 
-    return vel
+    const checkMaxVelocity = (
+        pos: number,
+        terminalVelocity: number
+      ): number => {
+        return pos > terminalVelocity
+          ? terminalVelocity
+          : pos < -terminalVelocity
+          ? -terminalVelocity
+          : pos;
+      };
+  
+      const getYVelocity = ({ velocityY, terminal }: Velocity): number =>
+        checkMaxVelocity(velocityY, terminal);
+  
+      const getXVelocity = ({ velocityX, terminal }: Velocity): number =>
+        checkMaxVelocity(velocityX, terminal);
+  
+      return vel
       ? {
           ...entity,
           components: components.map((comp) =>
             isLocation(comp)
               ? {
                   ...comp,
-                  x: comp.x + (vel.velocityX || 0),
-                  y: comp.y + (vel.velocityY || 0),
+                  x: comp.x + (getXVelocity(vel) || 0),
+                  y: comp.y + (getYVelocity(vel) || 0),
                 }
               : comp
           ),
